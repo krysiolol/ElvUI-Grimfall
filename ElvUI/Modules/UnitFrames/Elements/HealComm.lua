@@ -137,7 +137,7 @@ function UF:Construct_HealComm(frame)
 		outline.right:SetPoint("BOTTOMRIGHT", sBar, "BOTTOMRIGHT", 0, 0)
 
 		local glowTex = E.media.glowTex or "Interface\\AddOns\\ElvUI\\Media\\Textures\\GlowTex"
-		local glow = CreateFrame("Frame", nil, outline, "BackdropTemplate")
+		local glow = CreateFrame("Frame", nil, outline)
 		glow:SetBackdrop({
 			edgeFile = glowTex,
 			edgeSize = 4,

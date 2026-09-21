@@ -159,6 +159,7 @@ function CBO:UpdateSettings(unit)
 	if unit == "player" or unit == "target" or unit == "focus" or unit == "pet" then
 		local unitFrameName = "ElvUF_"..E:StringTitle(unit)
 		local unitframe = _G[unitFrameName]
+		if not unitframe then return end
 		ConfigureCastbar(unit, unitframe)
 	elseif unit == "arena" then
 		for i = 1, 5 do

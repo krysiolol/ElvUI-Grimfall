@@ -250,7 +250,7 @@ function UF:Construct_DeathKnightResourceBar(frame)
 	local runes = CreateFrame("Frame", nil, frame)
 	runes:CreateBackdrop(nil, nil, nil, self.thinBorders, true)
 
-	for i = 1, UF.classMaxResourceBar[E.myclass] do
+	for i = 1, (UF.classMaxResourceBar[E.myclass] or 0) do
 		runes[i] = CreateFrame("StatusBar", frame:GetName().."RuneButton"..i, runes)
 		runes[i]:SetStatusBarTexture(E.media.blankTex)
 		runes[i]:GetStatusBarTexture():SetHorizTile(false)

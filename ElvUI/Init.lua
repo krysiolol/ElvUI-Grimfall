@@ -195,10 +195,17 @@ function AddOn:OnInitialize()
 		end
 		local _, relTo = GameMenuButtonLogout:GetPoint()
 		if relTo ~= GameMenuFrame[AddOnName] then
-			GameMenuFrame[AddOnName]:ClearAllPoints()
-			GameMenuFrame[AddOnName]:Point("TOPLEFT", relTo, "BOTTOMLEFT", 0, -1)
-			GameMenuButtonLogout:ClearAllPoints()
-			GameMenuButtonLogout:Point("TOPLEFT", GameMenuFrame[AddOnName], "BOTTOMLEFT", 0, -16)
+			-- Guard against circular anchor dependency: relTo may already be anchored
+			-- to ElvUI_MenuButton (e.g. ElvUI_AddonListButton on custom servers).
+			-- pcall catches the "X is dependent on this" engine error gracefully.
+			local ok = pcall(function()
+				GameMenuFrame[AddOnName]:ClearAllPoints()
+				GameMenuFrame[AddOnName]:SetPoint("TOPLEFT", relTo, "BOTTOMLEFT", 0, -1)
+			end)
+			if ok then
+				GameMenuButtonLogout:ClearAllPoints()
+				GameMenuButtonLogout:Point("TOPLEFT", GameMenuFrame[AddOnName], "BOTTOMLEFT", 0, -16)
+			end
 		end
 	end)
 

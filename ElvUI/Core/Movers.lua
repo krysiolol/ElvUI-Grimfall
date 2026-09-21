@@ -393,7 +393,7 @@ function E:DisableMover(name)
 	if self.DisabledMovers[name] then return end
 
 	if not self.CreatedMovers[name] then
-		error("mover doesn't exist")
+		return  -- mover not yet created (e.g. unit frame skipped), silently ignore
 	end
 
 	self.DisabledMovers[name] = {}

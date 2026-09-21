@@ -25,6 +25,7 @@ P['abm'] = {
 }
 
 function ABM:PlayerABmove()
+	if not _G["ElvUF_Player"] or not _G["ElvUF_Player"].AuraBars then return end
 	local auraBar = _G["ElvUF_Player"].AuraBars
 	--Create Holder frame for our AuraBar Mover
 	local holder = CreateFrame('Frame', nil, auraBar)
@@ -37,6 +38,7 @@ function ABM:PlayerABmove()
 end
 
 function ABM:TargetABmove()
+	if not _G["ElvUF_Target"] or not _G["ElvUF_Target"].AuraBars then return end
 	local auraBar = _G["ElvUF_Target"].AuraBars
 	--Create Holder frame for our AuraBar Mover
 	local holder = CreateFrame('Frame', nil, auraBar)
@@ -49,6 +51,7 @@ function ABM:TargetABmove()
 end
 
 function ABM:FocusABmove()
+	if not _G["ElvUF_Focus"] or not _G["ElvUF_Focus"].AuraBars then return end
 	local auraBar = _G["ElvUF_Focus"].AuraBars
 	--Create Holder frame for our AuraBar Mover
 	local holder = CreateFrame('Frame', nil, auraBar)
@@ -61,6 +64,7 @@ function ABM:FocusABmove()
 end
 
 function ABM:PetABmove()
+	if not _G["ElvUF_Pet"] or not _G["ElvUF_Pet"].AuraBars then return end
 	local auraBar = _G["ElvUF_Pet"].AuraBars
 	--Create Holder frame for our AuraBar Mover
 	local holder = CreateFrame('Frame', nil, auraBar)

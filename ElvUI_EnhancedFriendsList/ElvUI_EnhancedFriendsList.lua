@@ -107,13 +107,15 @@ end
 -- Name
 function EFL:Update_Name(button)
 	local isOffline = button.TYPE == "Offline" or false
+	local typeDB = self.db and self.db[button.TYPE]
+	if not typeDB then return end
 
-	local enhancedName = (self.db[button.TYPE].enhancedName and GetClassColorHex(button.class, isOffline)..button.nameText.."|r" or button.nameText)
-	local enhancedLevel = self.db[button.TYPE].level and button.levelText and format(self.db[button.TYPE].levelText and (self.db[button.TYPE].shortLevel and L["SHORT_LEVEL_TEMPLATE"] or L["LEVEL_TEMPLATE"]) or "%s", self.db[button.TYPE].levelColor and GetLevelDiffColorHex(button.levelText, isOffline)..button.levelText.."|r" or button.levelText).." " or ""
-	local enhancedClass = self.db[button.TYPE].classText and button.class or ""
-	button.name:SetText(enhancedName..((enhancedLevel ~= "" or enhancedClass ~= "") and (self.db[button.TYPE].enhancedName and " - " or ", ") or "")..enhancedLevel..enhancedClass)
+	local enhancedName = (typeDB.enhancedName and GetClassColorHex(button.class, isOffline)..button.nameText.."|r" or button.nameText)
+	local enhancedLevel = typeDB.level and button.levelText and format(typeDB.levelText and (typeDB.shortLevel and L["SHORT_LEVEL_TEMPLATE"] or L["LEVEL_TEMPLATE"]) or "%s", typeDB.levelColor and GetLevelDiffColorHex(button.levelText, isOffline)..button.levelText.."|r" or button.levelText).." " or ""
+	local enhancedClass = typeDB.classText and button.class or ""
+	button.name:SetText(enhancedName..((enhancedLevel ~= "" or enhancedClass ~= "") and (typeDB.enhancedName and " - " or ", ") or "")..enhancedLevel..enhancedClass)
 
-	local nameColor = self.db[button.TYPE].enhancedName and (self.db[button.TYPE].colorizeNameOnly and (isOffline and FRIENDS_GRAY_COLOR or HIGHLIGHT_FONT_COLOR) or HexToRGB(GetClassColorHex(button.class, isOffline))) or (isOffline and FRIENDS_GRAY_COLOR or FRIENDS_WOW_NAME_COLOR)
+	local nameColor = typeDB.enhancedName and (typeDB.colorizeNameOnly and (isOffline and FRIENDS_GRAY_COLOR or HIGHLIGHT_FONT_COLOR) or HexToRGB(GetClassColorHex(button.class, isOffline))) or (isOffline and FRIENDS_GRAY_COLOR or FRIENDS_WOW_NAME_COLOR)
 	button.name:SetTextColor(nameColor.r, nameColor.g, nameColor.b)
 
 	local infoText
@@ -310,6 +312,7 @@ function EFL:GetLocalFriendInfo(name)
 end
 
 function EFL:EnhanceFriends_SetButton(button)
+	self.db = E.db.enhanceFriendsList  -- ensure db is always fresh
 	if button.buttonType == FRIENDS_BUTTON_TYPE_WOW then
 		local name, level, class, area, connected, status = GetFriendInfo(button.id)
 		if not name then return end
