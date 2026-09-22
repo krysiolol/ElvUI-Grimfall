@@ -296,7 +296,7 @@ local function Update(self, event, unit)
 			if element.strictMatching then
 				key = spellID
 			else
-				key = name..texture
+				key = name..(texture or "")
 			end
 
 			icon = icons[key]
@@ -385,7 +385,7 @@ local function setupIcons(self)
 			if element.strictMatching then
 				element.watched[icon.spellID] = icon
 			else
-				element.watched[name..image] = icon
+				element.watched[name..(image or "")] = icon
 			end
 
 			if element.PostCreateIcon then
