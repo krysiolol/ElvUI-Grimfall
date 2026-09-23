@@ -974,11 +974,15 @@ function CC:ToggleInlineGround(index)
     if not binding or f.deleted[index] or (binding.actionType or "SPELL") ~= "SPELL" then return end
     if binding.groundCasting == true then
         binding.groundCasting = nil
+        self:MarkEditorDirty()
+        self:RefreshEditor()
+        self:EditorMessage("Ground Casting off. This spell targets the mouseover unit again.", "normal")
     else
         binding.groundCasting = true
+        self:MarkEditorDirty()
+        self:RefreshEditor()
+        self:EditorMessage("Ground Casting on. Casts at your character (@player). Bypassing the ground-target reticle for area spells requires extended server API (Ascension-style); on standard 3.3.5a cores the targeting circle still appears.", "warn")
     end
-    self:MarkEditorDirty()
-    self:RefreshEditor()
 end
 
 function CC:ToggleInlineFrameOnly(index)
@@ -1468,6 +1472,17 @@ function CC:BuildInlineRow(parent, rowNumber)
         if button == "RightButton" then
             if row.bindingIndex then CC:ToggleRowDeleted(row.bindingIndex) end
         elseif row.bindingIndex then CC:ToggleInlineGround(row.bindingIndex) end
+    end)
+    row.groundButton:SetScript("OnEnter", function(self)
+        if not GameTooltip then return end
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText("Ground Casting", 1, 1, 1)
+        GameTooltip:AddLine("Spell rows only. Casts the spell at your own character (@player) instead of the mouseover unit, which is what lets an area spell skip the ground-target reticle.", nil, nil, nil, true)
+        GameTooltip:AddLine("Bypassing the reticle requires extended server API (Ascension-style). On standard 3.3.5a cores the targeting circle still appears and you must click it.", 0.95, 0.72, 0.25, true)
+        GameTooltip:Show()
+    end)
+    row.groundButton:SetScript("OnLeave", function()
+        if GameTooltip then GameTooltip:Hide() end
     end)
 
     row.frameOnlyButton = NewButton(row, "OFF", 105, 26, false)
