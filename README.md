@@ -87,6 +87,11 @@ A retail-style cooldown & buff tracker for WotLK: icon rows or draining status b
   <img src="Media/screenshots/cooldown_manager.png" alt="Cooldown Manager" width="720" />
 </p>
 
+### 🔇 Error Text & Sound Filter
+Cut the error-frame noise: **Hide Error Text** stops messages like "Not enough mana" or "Spell is not ready" from cluttering your screen, and **Mute Error Speech** silences the voice that reads errors out loud. Location: `General` ➔ `BlizzUI Improvements` ➔ **Error Text & Sound**.
+
+> The client-side *fizzle* tick (cast failed) is played by the game itself, not the UI — so no addon can mute it with Lua in 3.3.5a. To silence it too, copy the empty files from [`sound-override/Fizzle/`](sound-override/Fizzle/README.md) into `World of Warcraft\Data\<locale>\Sound\Spells\Fizzle\`.
+
 ---
 
 ## ⚡ Performance Optimizations
