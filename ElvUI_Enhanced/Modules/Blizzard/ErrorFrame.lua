@@ -36,3 +36,31 @@ function mod:CustomErrorFrameToggle()
 		end
 	end
 end
+
+local originalErrorSpeech
+
+local originalAddMessage
+
+function mod:ErrorFilterToggle()
+	local db = E.db.enhanced.blizzard.errorFilter
+
+	if db.muteErrorSpeech then
+		if originalErrorSpeech == nil then
+			originalErrorSpeech = GetCVar("Sound_EnableErrorSpeech")
+		end
+		SetCVar("Sound_EnableErrorSpeech", 0)
+	elseif originalErrorSpeech ~= nil then
+		SetCVar("Sound_EnableErrorSpeech", originalErrorSpeech)
+		originalErrorSpeech = nil
+	end
+
+	if db.hideErrorText then
+		if not originalAddMessage then
+			originalAddMessage = UIErrorsFrame.AddMessage
+		end
+		UIErrorsFrame.AddMessage = function() end
+	elseif originalAddMessage then
+		UIErrorsFrame.AddMessage = originalAddMessage
+		originalAddMessage = nil
+	end
+end

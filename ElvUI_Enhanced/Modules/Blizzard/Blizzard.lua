@@ -6,6 +6,7 @@ function mod:Initialize()
 	self:AddonList()
 	self:DressUpFrame()
 	self:ErrorFrameSize()
+	self:ErrorFilterToggle()
 end
 
 local function InitializeCallback()

@@ -642,6 +642,35 @@ local function BlizzardOptions()
 						disabled = function() return not E.db.enhanced.blizzard.errorFrame.enable end
 					}
 				}
+			},
+			errorFilter = {
+				order = 8,
+				type = "group",
+				name = L["Error Text & Sound"],
+				get = function(info) return E.db.enhanced.blizzard.errorFilter[info[#info]] end,
+				set = function(info, value)
+					E.db.enhanced.blizzard.errorFilter[info[#info]] = value
+					B:ErrorFilterToggle()
+				end,
+				args = {
+					header = {
+						order = 1,
+						type = "header",
+						name = L["Error Text & Sound"]
+					},
+					hideErrorText = {
+						order = 2,
+						type = "toggle",
+						name = L["Hide Error Text"],
+						desc = L["Prevents error messages like 'Not enough mana' or 'Spell is not ready' from showing in the error frame."]
+					},
+					muteErrorSpeech = {
+						order = 3,
+						type = "toggle",
+						name = L["Mute Error Speech"],
+						desc = L["Mutes the voice that reads error messages out loud. The fizzle sound when a spell fails is not affected; replace the Fizzle sounds in the Sound override folder to silence it."]
+					}
+				}
 			}
 		}
 	}

@@ -33,6 +33,10 @@ P.enhanced = {
 			fontSize = 12,
 			fontOutline = "NONE"
 		},
+		errorFilter = {
+			hideErrorText = false,
+			muteErrorSpeech = false
+		},
 		takeAllMail = false
 	},
 	chat = {
