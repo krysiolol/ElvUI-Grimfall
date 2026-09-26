@@ -5,8 +5,6 @@ local S = E:GetModule("Skins")
 local _G = _G
 local unpack = unpack
 --WoW API / Variables
---local SpellBook_GetCurrentPage = SpellBook_GetCurrentPage
---local BOOKTYPE_SPELL = BOOKTYPE_SPELL
 local MAX_SKILLLINE_TABS = MAX_SKILLLINE_TABS
 
 S:AddCallback("Skin_Spellbook", function()
@@ -20,27 +18,21 @@ S:AddCallback("Skin_Spellbook", function()
 	S:SetUIPanelWindowInfo(SpellBookFrame, "width", nil, 31)
 	S:SetBackdropHitRect(SpellBookFrame)
 
---[[
+	-- Mouse Wheel Navigation.
+	-- The page buttons' own enabled state is used as the page-bound guard, so this
+	-- avoids bookType/BOOKTYPE_SPELL, which do not exist in the 3.3.5a client.
 	SpellBookFrame:EnableMouseWheel(true)
 	SpellBookFrame:SetScript("OnMouseWheel", function(_, value)
-		--do nothing if not on an appropriate book type
-		if SpellBookFrame.bookType ~= BOOKTYPE_SPELL then
-			return
-		end
-
-		local currentPage, maxPages = SpellBook_GetCurrentPage()
-
 		if value > 0 then
-			if currentPage > 1 then
-				SpellBookPrevPageButton_OnClick()
+			if SpellBookPrevPageButton:IsEnabled() then
+				SpellBookPrevPageButton:OnClick()
 			end
 		else
-			if currentPage < maxPages then
-				SpellBookNextPageButton_OnClick()
+			if SpellBookNextPageButton:IsEnabled() then
+				SpellBookNextPageButton:OnClick()
 			end
 		end
 	end)
-]]
 
 	for i = 1, 3 do
 		local tab = _G["SpellBookFrameTabButton"..i]
