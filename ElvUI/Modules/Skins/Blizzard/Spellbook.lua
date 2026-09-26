@@ -19,17 +19,19 @@ S:AddCallback("Skin_Spellbook", function()
 	S:SetBackdropHitRect(SpellBookFrame)
 
 	-- Mouse Wheel Navigation.
-	-- The page buttons' own enabled state is used as the page-bound guard, so this
-	-- avoids bookType/BOOKTYPE_SPELL, which do not exist in the 3.3.5a client.
+	-- The page buttons are wired to Blizzard's global page-turn functions, not to an
+	-- OnClick method on the button object, so those functions are called directly. The
+	-- button enabled state already tracks the page bounds.
 	SpellBookFrame:EnableMouseWheel(true)
+
 	SpellBookFrame:SetScript("OnMouseWheel", function(_, value)
 		if value > 0 then
-			if SpellBookPrevPageButton:IsEnabled() then
-				SpellBookPrevPageButton:OnClick()
+			if SpellBookPrevPageButton:IsEnabled() == 1 then
+				SpellBookPrevPageButton_OnClick()
 			end
 		else
-			if SpellBookNextPageButton:IsEnabled() then
-				SpellBookNextPageButton:OnClick()
+			if SpellBookNextPageButton:IsEnabled() == 1 then
+				SpellBookNextPageButton_OnClick()
 			end
 		end
 	end)
