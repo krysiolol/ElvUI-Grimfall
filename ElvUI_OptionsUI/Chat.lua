@@ -621,6 +621,7 @@ E.Options.args.chat = {
 						E.db.chat.separateSizes = value
 						CH:PositionChat(true)
 						Bags:Layout()
+						Layout:UpdateChatResizeHandles()
 					end
 				},
 				spacer1 = {
@@ -635,6 +636,16 @@ E.Options.args.chat = {
 					desc = L["PANEL_DESC"],
 					set = function(info, value) E.db.chat.panelHeight = value CH:PositionChat(true) end,
 					min = 50, max = 600, step = 1
+				},
+				resizeLeft = {
+					order = 8.5,
+					type = "toggle",
+					name = L["Resizable Left Panel"],
+					desc = L["Allow dragging the top edge of the left chat panel to resize it. Right click the handle to reset the height."],
+					set = function(info, value)
+						E.db.chat.resizeLeft = value
+						Layout:UpdateChatResizeHandles()
+					end
 				},
 				panelWidth = {
 					order = 9,
@@ -681,6 +692,17 @@ E.Options.args.chat = {
 					hidden = function() return not E.db.chat.separateSizes end,
 					set = function(info, value) E.db.chat.panelHeightRight = value CH:PositionChat(true) end,
 					min = 50, max = 600, step = 1
+				},
+				resizeRight = {
+					order = 12.5,
+					type = "toggle",
+					name = L["Resizable Right Panel"],
+					desc = L["Allow dragging the top edge of the right chat panel to resize it. Right click the handle to reset the height."],
+					hidden = function() return not E.db.chat.separateSizes end,
+					set = function(info, value)
+						E.db.chat.resizeRight = value
+						Layout:UpdateChatResizeHandles()
+					end
 				},
 				panelWidthRight = {
 					order = 13,

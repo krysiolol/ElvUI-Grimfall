@@ -3,12 +3,19 @@ local LO = E:GetModule("Layout")
 local DT = E:GetModule("DataTexts")
 
 --Lua functions
+local _G = _G
+local ipairs = ipairs
+local select = select
 --WoW API / Variables
 local CreateFrame = CreateFrame
 local UIFrameFadeIn, UIFrameFadeOut = UIFrameFadeIn, UIFrameFadeOut
+local GetCursorPosition = GetCursorPosition
+local MouseIsOver = MouseIsOver
 
 local PANEL_HEIGHT = 22
 local SIDE_BUTTON_WIDTH = 16
+local CHAT_MIN_HEIGHT = 50
+local CHAT_MAX_HEIGHT = 600
 
 local function Panel_OnShow(self)
 	self:SetFrameLevel(0)
@@ -405,6 +412,141 @@ function LO:CreateChatPanels()
 	end
 
 	self:ToggleChatPanels()
+
+	-- Drag resize handles for the chat panels
+	for _, panel in ipairs({LeftChatPanel, RightChatPanel}) do
+		if panel then
+			local handle = CreateFrame("Frame", panel:GetName().."ResizeHandle", panel)
+			handle:SetSize(60, 16)
+			handle:SetPoint("CENTER", panel, "TOP")
+			handle:EnableMouse(true)
+			handle:SetFrameStrata("HIGH")
+			handle:SetFrameLevel(panel:GetFrameLevel() + 20)
+
+			-- Hover indicator
+			local indicator = CreateFrame("Frame", nil, handle)
+			indicator:SetAllPoints()
+			indicator:SetTemplate("Transparent")
+			indicator:Hide()
+
+			local arrow = indicator:CreateTexture(nil, "OVERLAY")
+			arrow:Size(16)
+			arrow:SetPoint("CENTER", indicator, "CENTER", 0, 0)
+			arrow:SetTexture(E.Media.Textures.ArrowUp)
+			arrow:SetVertexColor(0.2, 0.6, 1)
+
+			-- Drag preview line
+			local previewLine = panel:CreateTexture(nil, "OVERLAY")
+			previewLine:SetHeight(2)
+			previewLine:SetTexture("Interface\\Buttons\\WHITE8x8")
+			previewLine:SetVertexColor(0.2, 0.6, 1, 0.8)
+			previewLine:Hide()
+			panel.previewLine = previewLine
+
+			-- Remember the starting height, used by the right click reset
+			panel.originalHeight = (panel == LeftChatPanel) and E.db.chat.panelHeight
+				or (E.db.chat.separateSizes and E.db.chat.panelHeightRight or E.db.chat.panelHeight)
+
+			handle:SetScript("OnEnter", function()
+				indicator:Show()
+			end)
+			handle:SetScript("OnLeave", function(self)
+				if not self.isDragging then
+					indicator:Hide()
+				end
+			end)
+
+			handle:SetScript("OnMouseDown", function(self, button)
+				if button == "LeftButton" then
+					self.isDragging = true
+					self.startY = select(2, GetCursorPosition()) / self:GetEffectiveScale()
+					self.startHeight = panel:GetHeight()
+					self.currentDragHeight = self.startHeight
+
+					panel.previewLine:ClearAllPoints()
+					panel.previewLine:SetPoint("BOTTOMLEFT", panel, "BOTTOMLEFT", 0, self.startHeight)
+					panel.previewLine:SetWidth(panel:GetWidth())
+					panel.previewLine:Show()
+
+					self:SetScript("OnUpdate", function(self)
+						local curY = select(2, GetCursorPosition()) / self:GetEffectiveScale()
+						local newHeight = self.startHeight + (curY - self.startY)
+
+						if newHeight < CHAT_MIN_HEIGHT then newHeight = CHAT_MIN_HEIGHT end
+						if newHeight > CHAT_MAX_HEIGHT then newHeight = CHAT_MAX_HEIGHT end
+
+						self.currentDragHeight = newHeight
+						panel.previewLine:ClearAllPoints()
+						panel.previewLine:SetPoint("BOTTOMLEFT", panel, "BOTTOMLEFT", 0, newHeight)
+						panel.previewLine:SetWidth(panel:GetWidth())
+					end)
+				elseif button == "RightButton" then
+					local CH = E:GetModule("Chat")
+
+					if panel == LeftChatPanel then
+						E.db.chat.panelHeight = panel.originalHeight
+					elseif E.db.chat.separateSizes then
+						E.db.chat.panelHeightRight = panel.originalHeight
+					else
+						E.db.chat.panelHeight = panel.originalHeight
+					end
+
+					CH:PositionChat(true)
+				end
+			end)
+
+			handle:SetScript("OnMouseUp", function(self, button)
+				if button == "LeftButton" then
+					self.isDragging = false
+					self:SetScript("OnUpdate", nil)
+					panel.previewLine:Hide()
+
+					local CH = E:GetModule("Chat")
+					local newHeight = self.currentDragHeight or panel:GetHeight()
+
+					if panel == LeftChatPanel then
+						E.db.chat.panelHeight = newHeight
+					elseif E.db.chat.separateSizes then
+						E.db.chat.panelHeightRight = newHeight
+					else
+						E.db.chat.panelHeight = newHeight
+					end
+
+					CH:PositionChat(true)
+
+					if not MouseIsOver(self) then
+						indicator:Hide()
+					end
+				end
+			end)
+		end
+	end
+
+	self:UpdateChatResizeHandles()
+end
+
+function LO:UpdateChatResizeHandles()
+	local leftHandle = _G["LeftChatPanelResizeHandle"]
+	if leftHandle then
+		if E.db.chat.resizeLeft then
+			leftHandle:Show()
+			leftHandle:EnableMouse(true)
+		else
+			leftHandle:Hide()
+			leftHandle:EnableMouse(false)
+		end
+	end
+
+	local rightHandle = _G["RightChatPanelResizeHandle"]
+	if rightHandle then
+		if E.db.chat.resizeRight and E.db.chat.separateSizes then
+			rightHandle:Show()
+			rightHandle:EnableMouse(true)
+		else
+			rightHandle:Hide()
+			rightHandle:EnableMouse(false)
+		end
+	end
 end
 
 function LO:CreateMinimapPanels()
